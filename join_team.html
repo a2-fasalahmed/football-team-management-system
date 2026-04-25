@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h1>Join a Team</h1>
+        <div class="row row-cols-1 row-cols-md-3 g-4 mt-3">
+            {% for team in teams %}
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ team.name }}</h5>
+                        <p class="card-text">Coach: {{ team.coach.username }}</p>
+                    </div>
+                    <div class="card-footer">
+                        <form action="{{ url_for('player.join_team') }}" method="post">
+                            <input type="hidden" name="team_id" value="{{ team.id }}">
+                            <button type="submit" class="btn btn-primary w-100">Join Team</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <p>No teams available to join.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

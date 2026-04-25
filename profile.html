@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card border-0 shadow-sm" style="border-radius: 12px; margin-top: 2rem;">
+            <div class="card-header border-0 py-3 text-white" style="background-color: #0d6efd; border-radius: 12px 12px 0 0;">
+                <h4 class="mb-0 fw-bold px-2">Player Profile</h4>
+            </div>
+            <div class="card-body p-5">
+                <div class="row align-items-center mb-5">
+                    <div class="col-md-4 text-center border-end">
+                        <div class="mb-3">
+                            <div class="user-avatar mx-auto bg-primary text-white d-flex align-items-center justify-content-center fs-1" style="width: 100px; height: 100px; border-radius: 50%;">
+                                {% if current_user.profile_image and current_user.profile_image != 'default.jpg' %}
+                                    <img src="{{ current_user.profile_image }}" class="w-100 h-100" style="border-radius: 50%; object-fit: cover;">
+                                {% else %}
+                                    {{ current_user.username[0]|upper }}
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="text-success small fw-medium">
+                            <i class="far fa-check-circle"></i> Profile photo uploaded
+                        </div>
+                    </div>
+                    <div class="col-md-8 ps-md-5">
+                        <form action="{{ url_for('player.profile') }}" method="POST" enctype="multipart/form-data">
+                            <div class="row mb-3 align-items-center">
+                                <div class="col-md-3">
+                                    <label class="form-label fw-bold text-dark mb-0">Username:</label>
+                                </div>
+                                <div class="col-md-9">
+                                    <div class="fw-bold text-dark">{{ current_user.username }}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3 align-items-center border-bottom border-light pb-3">
+                                <div class="col-md-3">
+                                    <label class="form-label fw-bold text-dark mb-0">Email:</label>
+                                </div>
+                                <div class="col-md-9">
+                                    <input type="email" class="form-control border-0 bg-transparent px-0" name="email" value="{{ current_user.email }}">
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3 align-items-center">
+                                <div class="col-md-3">
+                                    <label class="form-label fw-bold text-dark mb-0">Team:</label>
+                                </div>
+                                <div class="col-md-9">
+                                    <span class="badge bg-info text-white rounded-pill px-3 py-1">{{ current_user.team.name if current_user.team else 'Free Agent' }}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-3 mt-2">
+                                    <label class="form-label fw-bold text-dark mb-0">Squad:</label>
+                                </div>
+                                <div class="col-md-9">
+                                    <input type="text" class="form-control" value="{{ current_user.squad or 'Unassigned' }}" readonly>
+                                    <div class="form-text small">Squad can only be changed by coach</div>
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-4">
+                                <div class="col-md-3 mt-2">
+                                    <label class="form-label fw-bold text-dark mb-0">Position:</label>
+                                </div>
+                                <div class="col-md-9">
+                                    <input type="text" class="form-control" value="{{ current_user.position or 'Unassigned' }}" readonly>
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-4 align-items-center border-top border-light pt-3">
+                                <div class="col-md-3">
+                                    <label class="form-label fw-bold text-dark mb-0">Update Photo:</label>
+                                </div>
+                                <div class="col-md-9">
+                                    <input type="file" class="form-control mb-1" name="photo">
+                                    <div class="form-text small">Allowed: jpg, jpeg, png, gif</div>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between mt-5">
+                                <a href="{{ url_for('player.dashboard') }}" class="btn btn-secondary text-white py-2 px-4 shadow-sm fw-medium" style="border-radius: 8px; background-color: #6b7a90; border: none;">Back to Dashboard</a>
+                                <button type="submit" class="btn btn-primary text-white py-2 px-4 shadow-sm fw-medium" style="border-radius: 8px; background-color: #0d6efd; border: none;">Update Profile</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
