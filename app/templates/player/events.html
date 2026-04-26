@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard-header mb-4">
+    <h2>All Events</h2>
+</div>
+
+<div class="card border-0 shadow-sm" style="border-radius: 12px;">
+    <div class="card-body p-0">
+        <ul class="list-group list-group-flush" style="border-radius: 12px;">
+            {% for ev in events %}
+            <li class="list-group-item d-flex justify-content-between align-items-center p-4 {% if not loop.last %}border-bottom border-light{% endif %}">
+                <div>
+                    <h5 class="fw-bold text-dark mb-2">{{ ev.title }}</h5>
+                    <div class="text-dark small fw-medium mb-1">Date: <span class="text-muted fw-normal">{{ ev.start_time.strftime('%Y-%m-%d %H:%M') }}</span></div>
+                    <div class="text-dark small fw-medium mb-1">Location: <span class="text-muted fw-normal">{{ ev.location }}</span></div>
+                    {% if ev.event_type == 'match' and 'vs' in ev.title %}
+                    <div class="text-dark small fw-medium">Opponent: <span class="text-muted fw-normal">{{ ev.title.split(' vs ')[-1] }}</span></div>
+                    {% endif %}
+                </div>
+                
+                {% set current_status = availabilities.get(ev.id, 'Pending') if availabilities else 'NOT SET' %}
+                <div class="d-flex align-items-center">
+                    <span class="badge {% if current_status == 'Pending' or current_status == 'NOT SET' %}bg-secondary{% else %}bg-dark{% endif %} me-3 py-2 px-3 rounded-pill">{{ current_status|upper }}</span>
+                    
+                    <form action="{{ url_for('player.respond_availability', event_id=ev.id) }}" method="POST" class="d-flex">
+                        <button type="submit" name="status" value="Yes" class="btn btn-sm {% if current_status == 'Yes' %}btn-success text-white{% else %}bg-success text-white bg-opacity-75{% endif %} me-1 fw-bold" style="border-radius: 4px; box-shadow: 0 2px 4px rgba(25, 135, 84, 0.2);">Yes</button>
+                        <button type="submit" name="status" value="No" class="btn btn-sm {% if current_status == 'No' %}btn-danger text-white{% else %}bg-danger text-white bg-opacity-75{% endif %} me-1 fw-bold" style="border-radius: 4px; box-shadow: 0 2px 4px rgba(220, 53, 69, 0.2);">No</button>
+                        <button type="submit" name="status" value="Maybe" class="btn btn-sm {% if current_status == 'Maybe' %}btn-warning text-dark{% else %}bg-warning text-dark bg-opacity-75{% endif %} fw-bold" style="border-radius: 4px; box-shadow: 0 2px 4px rgba(255, 193, 7, 0.2);">Maybe</button>
+                    </form>
+                </div>
+            </li>
+            {% else %}
+            <li class="list-group-item p-4 text-center text-muted">No events currently scheduled.</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+<div class="mt-4">
+    <a href="{{ url_for('player.dashboard') }}" class="btn btn-secondary text-white py-2 px-4 shadow-sm fw-medium" style="border-radius: 8px; background-color: #6b7a90; border: none;">Back to Dashboard</a>
+</div>
+{% endblock %}

@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 dashboard-header">
+    <h2><i class="fas fa-tachometer-alt text-secondary"></i> Player Dashboard</h2>
+    <a href="{{ url_for('player.events') }}" class="btn btn-primary fw-bold px-4" style="border-radius: 8px;">
+        <i class="far fa-calendar-alt"></i> {{ events|length }} Upcoming Events
+    </a>
+</div>
+
+<div class="card border-0 shadow-sm mb-4" style="border-radius: 12px;">
+    <div class="card-body p-4 d-flex justify-content-between align-items-center">
+        <div>
+            <h3 class="fw-bold mb-1">Welcome back, {{ current_user.username }}! 👋</h3>
+            <div class="text-muted small fw-medium mt-2">
+                <i class="fas fa-users"></i> {{ current_user.team.name if current_user.team else 'No Team' }} <span class="mx-1">|</span> 
+                <i class="fas fa-shield-alt"></i> {{ current_user.squad or 'Unassigned' }} <span class="mx-1">|</span>
+                <i class="fas fa-running"></i> {{ current_user.position or 'Unassigned' }}
+            </div>
+        </div>
+        <a href="{{ url_for('player.profile') }}" class="btn btn-outline-primary fw-medium px-4" style="border-radius: 8px; border-width: 2px;">
+            <i class="fas fa-edit"></i> Edit Profile
+        </a>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm text-center py-3" style="border-radius: 12px;">
+            <div class="card-body">
+                <h2 class="fw-bold">{{ events|length }}</h2>
+                <span class="text-muted small"><i class="far fa-calendar text-secondary"></i> Total Events</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm text-center py-3" style="border-radius: 12px;">
+            <div class="card-body">
+                <h2 class="fw-bold text-success">{{ confirmed_events }}</h2>
+                <span class="text-muted small"><i class="far fa-check-circle text-success"></i> Confirmed</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm text-center py-3" style="border-radius: 12px;">
+            <div class="card-body">
+                <h2 class="fw-bold">{{ announcements|length }}</h2>
+                <span class="text-muted small"><i class="fas fa-bullhorn text-warning"></i> Announcements</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm text-center py-3" style="border-radius: 12px;">
+            <div class="card-body">
+                <h2 class="fw-bold text-success"><i class="fas fa-check-circle fs-1"></i></h2>
+                <span class="text-muted small"><i class="far fa-image"></i> Profile Photo</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-7">
+        <div class="card border-0 shadow-sm h-100" style="border-radius: 12px;">
+            <div class="card-header bg-white border-0 pt-4 pb-0 d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold mb-0"><i class="far fa-calendar-check text-primary"></i> Upcoming Events</h5>
+                <a href="{{ url_for('player.events') }}" class="btn btn-sm btn-outline-primary fw-medium px-3 text-decoration-none" style="border-radius: 20px;">View All &rarr;</a>
+            </div>
+            <div class="card-body">
+                {% for ev in events[:3] %}
+                <div class="d-flex justify-content-between align-items-center bg-light p-3 mb-2" style="border-radius: 8px;">
+                    <div>
+                        <h6 class="fw-bold text-dark mb-1">{{ ev.title }}</h6>
+                        <small class="text-muted"><i class="far fa-clock"></i> {{ ev.start_time.strftime('%d %b %Y, %H:%M') }}</small>
+                    </div>
+                    <div class="text-muted small"><i class="fas fa-map-marker-alt"></i> {{ ev.location }}</div>
+                    
+                    {% set current_status = availabilities.get(ev.id, 'Pending') if availabilities else 'NOT SET' %}
+                    <div class="d-flex align-items-center">
+                        <span class="badge {% if current_status == 'Pending' or current_status == 'NOT SET' %}bg-secondary{% else %}bg-dark{% endif %} me-2 py-2 px-3 rounded-pill">{{ current_status|upper }}</span>
+                        <form action="{{ url_for('player.respond_availability', event_id=ev.id) }}" method="POST" class="d-flex">
+                            <button type="submit" name="status" value="Yes" class="btn btn-sm {% if current_status == 'Yes' %}btn-success text-white{% else %}btn-outline-success bg-white{% endif %} me-1" style="border-radius: 4px;">Yes</button>
+                            <button type="submit" name="status" value="No" class="btn btn-sm {% if current_status == 'No' %}btn-danger text-white{% else %}btn-outline-danger bg-white{% endif %} me-1" style="border-radius: 4px;">No</button>
+                            <button type="submit" name="status" value="Maybe" class="btn btn-sm {% if current_status == 'Maybe' %}btn-warning text-dark{% else %}btn-outline-warning text-dark bg-white{% endif %}" style="border-radius: 4px;">Maybe</button>
+                        </form>
+                    </div>
+                </div>
+                {% else %}
+                <div class="text-center text-muted p-4">You have no upcoming events.</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-5">
+        <div class="card border-0 shadow-sm h-100" style="border-radius: 12px;">
+            <div class="card-header bg-white border-0 pt-4 pb-0">
+                <h5 class="fw-bold mb-0"><i class="fas fa-bullhorn text-warning"></i> Recent Announcements</h5>
+            </div>
+            <div class="card-body">
+                {% for ann in announcements %}
+                <div class="bg-light p-3 mb-2" style="border-radius: 8px;">
+                    <p class="mb-2 fw-medium text-dark" style="font-size: 0.9rem;">{{ ann.content }}</p>
+                    <div class="text-muted small">
+                        <span class="me-3"><i class="fas fa-user-circle"></i> Coach</span>
+                        <span><i class="far fa-clock"></i> {{ ann.timestamp.strftime('%d %b, %H:%M') }}</span>
+                    </div>
+                </div>
+                {% else %}
+                <div class="text-center text-muted p-4">No recent announcements.</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard-header mb-4">
+    <h2>Availability for {{ event.title }} on {{ event.start_time.strftime('%Y-%m-%d %H:%M') }}</h2>
+</div>
+
+<div class="card border-0 shadow-sm" style="border-radius:12px;">
+    <div class="card-body p-0">
+        <table class="table align-middle mb-0">
+            <thead class="bg-light">
+                <tr>
+                    <th class="ps-4 py-3 border-0 text-muted fw-bold small text-uppercase">Player</th>
+                    <th class="text-end pe-5 py-3 border-0 text-muted fw-bold small text-uppercase">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for av in player_availabilities %}
+                <tr class="border-bottom border-light">
+                    <td class="ps-4 py-3 fw-medium">{{ av.player.username }}</td>
+                    <td class="text-end pe-5">
+                        {% if av.status|lower == 'no' or av.status|lower == 'unavailable' %}
+                            <span class="badge bg-danger rounded-pill px-3 py-1">No</span>
+                        {% elif av.status|lower == 'maybe' or av.status|lower == 'pending' %}
+                            <span class="badge bg-warning text-dark rounded-pill px-3 py-1">Maybe</span>
+                        {% else %}
+                            <span class="badge bg-success rounded-pill px-3 py-1">Yes</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="2" class="p-4 text-muted text-center">No players to show assignment block.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="card-footer bg-white border-top border-light p-4">
+        <a href="{{ url_for('coach.dashboard') }}" class="btn btn-secondary text-white" style="border-radius: 8px;">Back</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard-header mb-4">
+    <h2><i class="fas fa-sitemap text-secondary"></i> {{ current_user.team.name if current_user.team else 'Team' }} - Squad Management</h2>
+</div>
+
+<div class="row g-4 align-items-start">
+    {% for squad_name, players_in_squad in squads.items() %}
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm" style="border-radius:12px; background-color: #f4f7fa;">
+            <div class="card-header bg-primary text-white border-bottom-0 py-3 d-flex justify-content-between align-items-center" style="border-radius:12px 12px 0 0;">
+                <h5 class="mb-0 fw-bold">{{ squad_name }}</h5>
+                <span class="badge bg-white text-primary rounded-pill px-3 py-1">{{ players_in_squad|length }}</span>
+            </div>
+            <div class="card-body p-3">
+                {% for player in players_in_squad %}
+                <div class="card border-0 shadow-sm mb-3" style="border-radius: 8px;">
+                    <div class="card-body p-3 d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center">
+                            <div class="user-avatar bg-success text-white me-3" style="width: 40px; height: 40px; border-radius: 50%;">{{ player.username[0]|upper }}</div>
+                            <div>
+                                <h6 class="mb-0 fw-bold text-dark">{{ player.username }}</h6>
+                                <small class="text-muted">{{ player.position or 'Unassigned' }}</small>
+                            </div>
+                        </div>
+                        <div class="dropdown">
+                            <button class="btn btn-sm bg-white border dropdown-toggle fw-medium" type="button" data-bs-toggle="dropdown" style="color: #6b7a90; border-radius: 6px;">
+                                Move
+                            </button>
+                            <ul class="dropdown-menu shadow border-0" style="border-radius: 8px;">
+                                {% for target_squad in squads.keys() %}
+                                    {% if target_squad != squad_name and target_squad != 'Unassigned' %}
+                                    <li><a class="dropdown-item" href="#">{{ target_squad }}</a></li>
+                                    {% endif %}
+                                {% endfor %}
+                                {% if squad_name != 'Unassigned' %}
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="#">Unassign</a></li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="text-center text-muted p-2">No players in this squad.</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="mt-4">
+    <a href="{{ url_for('coach.dashboard') }}" class="btn btn-secondary text-white py-2 px-4 shadow-sm fw-medium" style="border-radius: 8px; background-color: #6b7a90; border: none;">Back to Team</a>
+</div>
+{% endblock %}
