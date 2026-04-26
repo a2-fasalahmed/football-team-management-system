@@ -1,6 +1,5 @@
 # Football Team Management System
-**Module:** UFCFFF-30-3 — Software Development Project  
-**Institution:** UWE Bristol 2025–26
+**Module:**  Software Development Project  
 
 A web-based football team management system allowing coaches and players 
 to manage fixtures, track availability, and organise team activities.
