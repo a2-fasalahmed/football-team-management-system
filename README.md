@@ -13,7 +13,7 @@ to manage fixtures, track availability, and organise team activities.
 6. Create a `.env` file with: `SECRET_KEY=any-random-string`
 7. Run database migrations: `flask db upgrade`
 8. Run the app: `flask run`
-9. Open browser at: `http://127.0.0.1:5000`
+9. Open browser at: `http://localhost:5000/index`
 
 ## Running Tests
 ```bash
